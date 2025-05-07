@@ -10,6 +10,9 @@
 using namespace std;
 using std::any_cast;
 
+// 定义在 include/parsing/torrent.h 中声明的 static const 成员
+const unsigned int torrent::BLOCK_SIZE;
+
 torrent::torrent(const string& filename) {
 
 	buffer buff = get_bytes(filename);

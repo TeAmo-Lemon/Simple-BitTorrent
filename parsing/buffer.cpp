@@ -32,6 +32,7 @@ buffer setBE32(unsigned int n, buffer& b, const buffer::size_type idx) {
 		b[idx+3-i] = n & 0xff;
 		n >>= 8;
 	}
+	return b;
 }
 
 buffer setBE16(unsigned int n, buffer& b, const buffer::size_type idx) {
@@ -40,6 +41,7 @@ buffer setBE16(unsigned int n, buffer& b, const buffer::size_type idx) {
 
 	b[idx+1] = n & 0xff;
 	b[idx] = (n >> 8) & 0xff;
+	return b;
 }
 
 void print(const buffer& b) {

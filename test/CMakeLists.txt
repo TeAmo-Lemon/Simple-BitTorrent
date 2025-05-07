@@ -1,18 +1,31 @@
-set(BINARY ${CMAKE_PROJECT_NAME}_tst)
+# Set up testing
+set(TEST_SOURCES
+    test_bencode.cpp
+    test_torrent.cpp
+)
 
-file(GLOB_RECURSE TEST_SOURCES *.cpp)
+# Create test executable
+add_executable(bittorrent_tests ${TEST_SOURCES})
 
-set(TEST_SOURCES ${TEST_SOURCES})
+# Link against GTest and your project libraries
+target_link_libraries(bittorrent_tests
+    GTest::GTest
+    GTest::Main
+    BitTorrent_lib
+    ssl
+    crypto
+)
 
-include_directories(${CMAKE_SOURCE_DIR}/source/include)
+# 在 target_link_libraries 之前添加
+target_include_directories(bittorrent_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
-foreach (test_source ${TEST_SOURCES})
+# Register tests with output
+gtest_discover_tests(bittorrent_tests
+    PROPERTIES
+    ENVIRONMENT "GTEST_OUTPUT=xml:${CMAKE_BINARY_DIR}/test_detail.xml"
+)
 
-    get_filename_component(test_filename ${test_source} NAME)
-    string(REPLACE ".cpp" "" test_name ${test_filename})
-
-    add_executable(${test_name} ${test_source})
-    target_link_libraries(${test_name} gtest gmock_main ${CMAKE_PROJECT_NAME}_lib)
-    
-
-endforeach(test_source ${TEST_SOURCES})
+# Enable test output
+set_tests_properties(${ALL_TESTS} PROPERTIES
+    ENVIRONMENT "CTEST_OUTPUT_ON_FAILURE=1"
+)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.00)
+cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 17) 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -10,15 +10,17 @@ project(BitTorrent
         LANGUAGES C CXX
         )
 
-# add_subdirectory(source)
-# add_subdirectory(test)
+# Enable testing
+enable_testing()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/include)
-# add_subdirectory(googletest)
+# Find GTest package
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
 
-add_executable(BitTorrentApp
-    main.cpp
+add_subdirectory(test)
+
+# 将源文件（除了 main.cpp）定义为一个列表
+set(BITTORRENT_SOURCES
     parsing/bencode.cpp
     parsing/buffer.cpp
     parsing/torrent.cpp
@@ -36,7 +38,18 @@ add_executable(BitTorrentApp
     download/worker.cpp
 )
 
-target_link_libraries(BitTorrentApp PRIVATE ssl crypto)
+# 创建库 BitTorrent_lib
+add_library(BitTorrent_lib ${BITTORRENT_SOURCES})
+
+# 为库设置包含目录
+target_include_directories(BitTorrent_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# 创建主可执行文件
+add_executable(BitTorrentApp main.cpp)
+
+# 链接主可执行文件到库和其他依赖
+target_link_libraries(BitTorrentApp PRIVATE BitTorrent_lib ssl crypto)
+
 
 
 
