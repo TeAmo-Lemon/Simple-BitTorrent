@@ -158,18 +158,18 @@ TEST(BencodeTest, EncodeDictionary) {
 // 测试解析无效的Bencode数据
 TEST(BencodeTest, ParseInvalidBencode) {
     const char* s_invalid_start = "x42e";
-    buffer buf_invalid_start(s_invalid_start, s_invalid_start + strlen(s_invalid_start)); // Invalid start
+    buffer buf_invalid_start(s_invalid_start, s_invalid_start + strlen(s_invalid_start)); // 无效的开始字符
     ASSERT_THROW(bencode::parse(buf_invalid_start), bencode::invalid_bencode);
 
     const char* s_unterminated_int = "i42";
-    buffer buf_unterminated_int(s_unterminated_int, s_unterminated_int + strlen(s_unterminated_int)); // Unterminated integer
+    buffer buf_unterminated_int(s_unterminated_int, s_unterminated_int + strlen(s_unterminated_int)); // 未结束的整数
     ASSERT_THROW(bencode::parse(buf_unterminated_int), bencode::invalid_bencode);
 
     const char* s_invalid_str_len = "4spam";
-    buffer buf_invalid_str_len(s_invalid_str_len, s_invalid_str_len + strlen(s_invalid_str_len)); // Missing colon in string
+    buffer buf_invalid_str_len(s_invalid_str_len, s_invalid_str_len + strlen(s_invalid_str_len)); // 字符串中缺少冒号
     ASSERT_THROW(bencode::parse(buf_invalid_str_len), bencode::invalid_bencode);
     
     const char* s_incomplete_str = "5:spam";
-    buffer buf_incomplete_str(s_incomplete_str, s_incomplete_str + strlen(s_incomplete_str)); // Incomplete string
+    buffer buf_incomplete_str(s_incomplete_str, s_incomplete_str + strlen(s_incomplete_str)); // 不完整的字符串
     ASSERT_THROW(bencode::parse(buf_incomplete_str), bencode::invalid_bencode);
 } 

@@ -12,7 +12,6 @@ url_t::url_t(const string& url) {
 	string pref_http = "http://";
 	string pref_https = "https://";
 
-	// udp://tracker.coppersurfer.tk:6969/announce
 
 	if(s.substr(0,pref_udp.size()) == pref_udp) {
 		s.erase(0,pref_udp.size());
@@ -27,7 +26,7 @@ url_t::url_t(const string& url) {
 		this->protocol = HTTPS;
 
 	} else {
-		throw runtime_error("undefined protocol in url");
+		throw runtime_error("URL中未定义的协议类型");
 	}
 	
 	// 查找冒号，用于分割主机名和端口号
@@ -70,4 +69,11 @@ url_t::url_t(const string& url) {
 		path = "/"; // 默认路径
 	}
 	this->path = move(path);
+}
+
+bool url_t::operator==(const url_t& other) const {
+	return protocol == other.protocol &&
+		host == other.host &&
+		port == other.port &&
+		path == other.path;
 }

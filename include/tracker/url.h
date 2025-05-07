@@ -13,6 +13,7 @@ struct url_t {
 
 	url_t(const std::string& url);
 	url_t() {};
+	bool operator==(const url_t& other) const;
 };
 
 #endif // URL_H

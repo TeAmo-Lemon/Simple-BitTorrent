@@ -6,7 +6,7 @@
 #include "tracker/url.h"
 #include <algorithm>
 #include <stdexcept>
-#include "download/peer_id.h"
+#include "download/message.h"
 #include "parsing/bencode.h"
 #include <iostream>
 

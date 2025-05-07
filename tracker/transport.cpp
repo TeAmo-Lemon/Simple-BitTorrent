@@ -16,7 +16,6 @@ transport::transport(string address, int port, int type, bool blocking) {
 
 	fd = socket(AF_INET, type | (blocking ? 0 : SOCK_NONBLOCK), 0);
 	if (fd < 0) { 
-
 		string what = strerror(errno);
 		throw runtime_error(what);
 	} 
@@ -26,8 +25,7 @@ transport::transport(string address, int port, int type, bool blocking) {
 	struct hostent *server;
 	server = gethostbyname(address.c_str());
 	if (server == NULL) {
-	    
-		throw runtime_error("host not found");
+	    throw runtime_error("找不到主机");
 	}
 	      
 	servaddr.sin_family = AF_INET; 
@@ -35,7 +33,6 @@ transport::transport(string address, int port, int type, bool blocking) {
 	servaddr.sin_addr = *((struct in_addr *)server->h_addr);
 
 	if (connect(fd, (struct sockaddr*)&servaddr,sizeof(servaddr)) < 0) {
-
 		if (errno != EINPROGRESS) {
 			string what = strerror(errno);
 			throw runtime_error(what);
@@ -44,7 +41,6 @@ transport::transport(string address, int port, int type, bool blocking) {
 }
 
 void transport::send(buffer message) {
-
 	ssize_t n = ::send(fd, message.data(), message.size(), 0);
 
 	if(n < 0) {
@@ -54,7 +50,6 @@ void transport::send(buffer message) {
 }
 
 buffer transport::receive() {
-
 	ssize_t n = recv(fd, buff, MAXLINE, 0);
 
 	if(n < 0) {
@@ -66,7 +61,6 @@ buffer transport::receive() {
 }
 
 void transport::close() {
-
 	if(closed_flag){
 		return;
 	}

@@ -15,7 +15,7 @@ void ssl_transport::init_ssl() {
     // 创建SSL上下文
     ctx = SSL_CTX_new(SSLv23_client_method());
     if (ctx == NULL) {
-        throw runtime_error("Error creating SSL context");
+        throw runtime_error("创建SSL上下文失败");
     }
 
     // 设置SSL验证选项 - 生产环境中应该进行严格验证
@@ -25,14 +25,14 @@ void ssl_transport::init_ssl() {
     ssl = SSL_new(ctx);
     if (ssl == NULL) {
         SSL_CTX_free(ctx);
-        throw runtime_error("Error creating SSL connection");
+        throw runtime_error("创建SSL连接失败");
     }
     
     // 将SSL连接与socket关联
     if (SSL_set_fd(ssl, fd) != 1) {
         SSL_free(ssl);
         SSL_CTX_free(ctx);
-        throw runtime_error("Error associating SSL with socket");
+        throw runtime_error("SSL与socket关联失败");
     }
     
     ssl_connected = false;
@@ -68,7 +68,7 @@ void ssl_transport::connect_ssl() {
         int err = SSL_get_error(ssl, ret);
         char error_string[256];
         ERR_error_string_n(err, error_string, sizeof(error_string));
-        throw runtime_error(string("SSL connection failed: ") + error_string);
+        throw runtime_error(string("SSL连接失败: ") + error_string);
     }
     
     ssl_connected = true;
@@ -84,7 +84,7 @@ void ssl_transport::send(buffer message) {
         int err = SSL_get_error(ssl, written);
         char error_string[256];
         ERR_error_string_n(err, error_string, sizeof(error_string));
-        throw runtime_error(string("SSL write failed: ") + error_string);
+        throw runtime_error(string("SSL写入失败: ") + error_string);
     }
 }
 
@@ -99,7 +99,7 @@ buffer ssl_transport::receive() {
         int err = SSL_get_error(ssl, bytes);
         char error_string[256];
         ERR_error_string_n(err, error_string, sizeof(error_string));
-        throw runtime_error(string("SSL read failed: ") + error_string);
+        throw runtime_error(string("SSL读取失败: ") + error_string);
     }
     
     return buffer(buff, buff + bytes);

@@ -30,12 +30,9 @@ set(BITTORRENT_SOURCES
     tracker/tracker.cpp
     tracker/transport.cpp
     tracker/url.cpp
-    download/connection.cpp
     download/download.cpp
-    download/farm.cpp
     download/message.cpp
-    download/peer_id.cpp
-    download/worker.cpp
+    download/peer_connection.cpp
 )
 
 # 创建库 BitTorrent_lib

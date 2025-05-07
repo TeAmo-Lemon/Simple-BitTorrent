@@ -6,14 +6,14 @@ using namespace std;
 
 unsigned int getBE16(const buffer& b, buffer::size_type idx) {
 
-	if(idx+1 >= b.size()) throw runtime_error("index out of bounds");
+	if(idx+1 >= b.size()) throw runtime_error("越界");
 
 	return (b[idx] << 8) + b[idx+1];
 }
 
 unsigned int getBE32(const buffer& b, buffer::size_type idx) {
 
-	if(idx+3 >= b.size()) throw runtime_error("index out of bounds");
+	if(idx+3 >= b.size()) throw runtime_error("越界");
 
 	unsigned int ans = 0;
 	for(int i=0;i<4;i++) {
@@ -25,7 +25,7 @@ unsigned int getBE32(const buffer& b, buffer::size_type idx) {
 
 buffer setBE32(unsigned int n, buffer& b, const buffer::size_type idx) {
 
-	if(idx+3 >= b.size()) throw runtime_error("index out of bounds");
+	if(idx+3 >= b.size()) throw runtime_error("越界");
 
 	for(int i=0;i<4;i++) {
 
@@ -37,7 +37,7 @@ buffer setBE32(unsigned int n, buffer& b, const buffer::size_type idx) {
 
 buffer setBE16(unsigned int n, buffer& b, const buffer::size_type idx) {
 
-	if(idx+1 >= b.size()) throw runtime_error("index out of bounds");
+	if(idx+1 >= b.size()) throw runtime_error("越界");
 
 	b[idx+1] = n & 0xff;
 	b[idx] = (n >> 8) & 0xff;

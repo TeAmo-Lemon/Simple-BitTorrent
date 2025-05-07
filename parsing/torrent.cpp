@@ -95,7 +95,7 @@ buffer torrent::get_bytes(const string& filename) {
 
 	is.open(filename, ios::binary);
 	if(is.fail()) {
-		throw runtime_error("Opening file failed");
+		throw runtime_error("打开文件失败");
 	}
 
 	is.seekg(0, ios::end);

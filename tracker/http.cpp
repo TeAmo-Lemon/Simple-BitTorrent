@@ -10,7 +10,7 @@ http::http(const url_t& url):
 	socket(url.host, url.port), url(url), n_args(0) {
 		
 		if (url.protocol != url_t::HTTP) {
-			throw runtime_error("url is not a http url");
+			throw runtime_error("URL不是HTTP协议");
 		}
 
 		this->url = url;

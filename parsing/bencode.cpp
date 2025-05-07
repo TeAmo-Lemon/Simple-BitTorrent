@@ -47,10 +47,10 @@ bencode::item bencode::parse_byte_string(buffer const& s, size& idx) {
 
 bencode::item bencode::parse_integer(buffer const& s, size& idx) {
 
-	if(s[idx] != 'i') throw invalid_bencode("does not start with i");
+	if(s[idx] != 'i') throw invalid_bencode("要以i开头");
 
 	idx++;
-	if(idx >= s.size()) throw invalid_bencode("to small");
+	if(idx >= s.size()) throw invalid_bencode("s太小了");
 
 	int sign = 1;
 
@@ -60,7 +60,7 @@ bencode::item bencode::parse_integer(buffer const& s, size& idx) {
 	}
 
 	if(idx >= s.size() || s[idx] < '0' || s[idx] > '9') {
-		throw invalid_bencode("wrong number");
+		throw invalid_bencode("不是数字");
 	}
 
 	long long result = 0;
@@ -92,16 +92,16 @@ void bencode::next(bencode::item& e, const buffer& s, size& idx) {
 	}else if(s[idx] == 'd') {
 		e = bencode::parse_dictionary(s, idx);
 	}else {
-		throw invalid_bencode("wrong first character");
+		throw invalid_bencode("第一个字符不对");
 	}
 }
 
 bencode::item bencode::parse_list(buffer const& s, size& idx) {
 
-	if(s[idx] != 'l') throw invalid_bencode("does not start with l");
+	if(s[idx] != 'l') throw invalid_bencode("不是以'l'开头");
 	idx++;
 
-	if(idx >= s.size()) throw invalid_bencode("to small");
+	if(idx >= s.size()) throw invalid_bencode("数据太短");
 
 	vector<item> result;
 	while(idx < s.size() && s[idx] != 'e') {
@@ -111,7 +111,7 @@ bencode::item bencode::parse_list(buffer const& s, size& idx) {
 		result.push_back(f);
 	}
 
-	if (idx >= s.size()) throw invalid_bencode("no e found at the end");
+	if (idx >= s.size()) throw invalid_bencode("未找到结尾的'e'");
 	idx++;
 
 	item e;
@@ -123,10 +123,10 @@ bencode::item bencode::parse_list(buffer const& s, size& idx) {
 
 bencode::item bencode::parse_dictionary(buffer const& s, size& idx) {
 
-	if(s[idx] != 'd') throw invalid_bencode("does not start with d");
+	if(s[idx] != 'd') throw invalid_bencode("不是以'd'开头");
 	idx++;
 
-	if(idx >= s.size()) throw invalid_bencode("to small");
+	if(idx >= s.size()) throw invalid_bencode("数据太短");
 
 	map<item,item> result;
 	while(idx < s.size() && s[idx] != 'e') {
@@ -134,8 +134,8 @@ bencode::item bencode::parse_dictionary(buffer const& s, size& idx) {
 		item key;
 		next(key, s, idx);
 
-		if(result.count(key) > 0) throw invalid_bencode("duplicate key");
-		if(idx >= s.size()) throw invalid_bencode("to small");
+		if(result.count(key) > 0) throw invalid_bencode("键值重复");
+		if(idx >= s.size()) throw invalid_bencode("数据太短");
 
 		item value;
 		next(value, s, idx);
@@ -143,7 +143,7 @@ bencode::item bencode::parse_dictionary(buffer const& s, size& idx) {
 		result[key] = value;
 	}
 
-	if (idx >= s.size()) throw invalid_bencode("no e found at the end");
+	if (idx >= s.size()) throw invalid_bencode("未找到结尾的'e'");
 	idx++;
 
 	item e;
@@ -155,14 +155,14 @@ bencode::item bencode::parse_dictionary(buffer const& s, size& idx) {
 
 bencode::item bencode::parse(buffer const& s) {
 
-	if(s.size() == 0) throw invalid_bencode("empty string");
+	if(s.size() == 0) throw invalid_bencode("空字符串");
 
 	size idx=0;
 	item e;
 	next(e, s, idx);
 
 	if(idx < s.size()) {
-		throw invalid_bencode();
+		throw invalid_bencode("解析后还有剩余数据");
 	}
 
 	return e;
@@ -198,7 +198,7 @@ static void print_rec(const bencode::item& e) {
 		}
 		cout<<"}";
 	}else{
-		throw bencode::invalid_bencode("not a valid type");
+		throw bencode::invalid_bencode("不是有效的类型");
 	}
 }
 
@@ -256,11 +256,11 @@ bool bencode::item::operator<(const bencode::item& other) const {
 
 bencode::item bencode::item::get(const item& key) const {
 
-	if(this->t != d) throw runtime_error("not a dictionary");
+	if(this->t != d) throw runtime_error("不是字典类型");
 	map<bencode::item,bencode::item> dic = 
 		any_cast<map<bencode::item,bencode::item>>(this->data);
 
-	if(dic.count(key) == 0) throw runtime_error("no key in dictionary");
+	if(dic.count(key) == 0) throw runtime_error("字典中不存在该键");
 	return dic[key];
 }
 
@@ -271,7 +271,7 @@ buffer bencode::item::get_buffer(const char* key) const {
 	key_item.data = buffer(key, key+strlen(key));
 
 	item val = get(key_item);
-	if(val.t != bs) throw runtime_error("value not of type bs");
+	if(val.t != bs) throw runtime_error("值不是buffer类型");
 
 	return any_cast<buffer>(val.data);
 }
@@ -292,7 +292,7 @@ long long bencode::item::get_int(const char* key) const {
 	key_item.data = buffer(key, key+strlen(key));
 
 	item val = get(key_item);
-	if(val.t != i) throw runtime_error("value not of type i");
+	if(val.t != i) throw runtime_error("值不是整数类型");
 
 	return any_cast<long long>(val.data);
 }
@@ -301,7 +301,7 @@ string bencode::item::get_string(const char* key) const {
 
 	buffer buff = get_buffer(key);
 	for(char c:buff){
-		if(c<0) throw runtime_error("not a valid ASCII buffer");
+		if(c<0) throw runtime_error("不是有效的ASCII字符串");
 	}
 
 	return string(buff.begin(), buff.end());
@@ -314,7 +314,7 @@ vector<bencode::item> bencode::item::get_list(const char* key) const {
 	key_item.data = buffer(key, key+strlen(key));
 
 	item val = get(key_item);
-	if(val.t != l) throw runtime_error("value not of type l");
+	if(val.t != l) throw runtime_error("不是列表类型");
 
 	return any_cast<vector<item>>(val.data);
 }
@@ -325,7 +325,7 @@ bool bencode::item::key_present(const char* key) const {
 	key_item.t = bs;
 	key_item.data = buffer(key, key+strlen(key));
 
-	if(this->t != d) throw runtime_error("not a dictionary");
+	if(this->t != d) throw runtime_error("不是字典类型");
 	map<bencode::item,bencode::item> dic = 
 		any_cast<map<bencode::item,bencode::item>>(this->data);
 
@@ -377,7 +377,7 @@ buffer bencode::encode(const bencode::item& e) {
 
 	} else {
 
-		throw invalid_bencode("invalid element found");
+		throw invalid_bencode("无效的元素");
 	}
 
 	return ans;
