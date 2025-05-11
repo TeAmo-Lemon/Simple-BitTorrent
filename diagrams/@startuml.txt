@@ -1,0 +1,37 @@
+@startuml
+package "BitTorrent System" {
+  [User] --> [BitTorrent Client]
+  [BitTorrent Client] --> [Torrent File]
+  [BitTorrent Client] --> [Tracker]
+  [BitTorrent Client] --> [Peer Network]
+
+  [Torrent File] #..# [File Metadata]
+  note right of [Torrent File]
+    包含文件分片信息、Tracker地址等
+  end note
+
+  [Tracker] --> [Peer List]
+  note right of [Tracker]
+    提供Peer地址，协调连接
+  end note
+
+  [Peer Network] --> [Peer1]
+  [Peer Network] --> [Peer2]
+  [Peer Network] --> [Peer3]
+  [Peer1] --> [File Piece1]
+  [Peer2] --> [File Piece2]
+  [Peer3] --> [File Piece3]
+
+  [BitTorrent Client] --> [File Piece1]
+  [BitTorrent Client] --> [File Piece2]
+  [BitTorrent Client] --> [File Piece3]
+  note right of [BitTorrent Client]
+    并行下载分片，同时上传给其他Peer
+  end note
+}
+
+[Peer1] --> [Peer2] : 交换分片
+[Peer2] --> [Peer3] : 交换分片
+[Peer3] --> [Peer1] : 交换分片
+
+@enduml

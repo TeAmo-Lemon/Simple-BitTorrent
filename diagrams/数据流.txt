@@ -1,0 +1,26 @@
+@startuml
+actor User
+boundary "命令行界面" as CLI
+control "下载管理器" as DM
+entity "Peer连接池" as PeerPool
+database "文件系统" as FS
+
+User -> CLI: 输入Torrent文件路径
+CLI -> DM: 初始化下载任务
+
+DM -> PeerPool: 创建Peer连接
+activate PeerPool
+
+loop 下载过程
+    PeerPool -> DM: 接收数据块
+    DM -> FS: 写入文件
+    DM -> CLI: 更新进度
+end
+
+PeerPool -> DM: 下载完成
+deactivate PeerPool
+
+DM -> FS: 验证文件完整性
+DM -> CLI: 显示完成状态
+CLI -> User: 显示结果
+@enduml

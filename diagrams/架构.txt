@@ -1,0 +1,45 @@
+@startuml BitTorrent Simple Architecture
+
+!theme plain
+skinparam backgroundColor white
+skinparam componentStyle uml2
+
+' 定义样式
+skinparam component {
+    BackgroundColor #E1F5FE
+    BorderColor #0288D1
+    FontColor black
+}
+
+' 外部系统
+cloud "Internet" {
+    [Tracker Server]
+    [Peer Network]
+}
+
+' 主系统
+package "BitTorrent Client" {
+    package "Core" {
+        [Torrent Parser] as parser
+        note right of parser: 解析种子文件
+        
+        [Tracker Client] as tracker
+        note right of tracker: 与Tracker通信
+        
+        [Download Manager] as downloader
+        note right of downloader: 管理下载任务
+    }
+    
+    database "Storage" {
+        [Local Files]
+    }
+}
+
+' 关系
+parser --> tracker: 种子信息
+tracker --> [Tracker Server]: 获取Peer列表
+tracker --> downloader: Peer信息
+downloader --> [Peer Network]: 数据传输
+downloader --> [Local Files]: 保存文件
+
+@enduml

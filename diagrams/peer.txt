@@ -1,0 +1,48 @@
+@startuml
+skinparam componentStyle uml2
+skinparam backgroundColor #EEEBDC
+
+package "BitTorrent Network" {
+  [Tracker Server] as Tracker #FFAAAA
+  [Seed] as Seed #AAFFAA
+  [Peer 1] as Peer1
+  [Peer 2] as Peer2
+  [Peer 3] as Peer3
+  [New Peer] as NewPeer #AAAAFF
+}
+
+Tracker --> NewPeer : 1. 注册Peer\n(IP/Port/文件信息)
+NewPeer --> Tracker : 2. 请求Peer列表
+Tracker --> NewPeer : 3. 返回可用Peer列表
+
+NewPeer --> Seed : 4. 请求元数据
+Seed --> NewPeer : 5. 发送文件元数据
+
+NewPeer --> Peer1 : 6. 请求分块
+Peer1 --> NewPeer : 7. 发送分块数据
+
+NewPeer --> Peer2 : 8. 请求分块
+Peer2 --> NewPeer : 9. 发送分块数据
+
+NewPeer --> Peer3 : 10. 上传分块
+Peer3 --> NewPeer : 11. 确认接收
+
+Seed --> Peer1 : 定期更新\n可用分块
+Peer1 --> Peer2 : P2P数据交换
+Peer2 --> Peer3 : P2P数据交换
+
+note right of Seed
+  Seed是拥有完整文件的节点
+  绿色表示完整资源提供者
+end note
+
+note left of NewPeer
+  NewPeer是新加入节点
+  蓝色表示正在下载的Leecher
+end note
+
+note bottom of Tracker
+  Tracker不存储文件内容
+  只协调Peer之间的连接
+end note
+@enduml

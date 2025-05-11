@@ -1,0 +1,98 @@
+@startuml
+left to right direction
+' ========================
+' 类定义：speed
+' ========================
+class speed {
+  -atomic<unsigned int> bytes
+  -atomic<unsigned int> received
+  -atomic<bool> finito
+  -thread t
+
+  -unsigned int prev
+  -long long total
+  -const double e_factor = 0.6321205588
+  -const int delay = 500
+  -int mod
+
+  -void human_readable(unsigned int b)
+
+  +speed()
+  +void set_total(long long t)
+  +void start()
+  +void stop()
+  +void add(unsigned int b)
+  +void draw(double progress, unsigned int speed)
+}
+
+' ========================
+' 类定义：writer
+' ========================
+class writer {
+  -ofstream out
+  -atomic<bool> finito
+  -mutex mx
+  -condition_variable cv
+  -thread t
+
+  ..job structure..
+  -queue<job> q
+
+  +writer(string filename)
+  +void start()
+  +void stop()
+  +void add(buffer& b, int offset)
+}
+
+class writer::job {
+  +buffer b
+  +int offset
+  +job(buffer b, int offset)
+}
+
+' ========================
+' 类定义：download
+' ========================
+class download {
+  -vector<vector<bool>> received
+  -vector<vector<bool>> is_in_queue
+  -const vector<peer>& peers
+  -torrent& t
+  -writer w
+  -speed s
+  -int received_count
+  -int total_blocks
+
+  +download(const vector<peer>& peers, torrent& t)
+  +void add_received(int piece, int block, buffer b)
+  +void start()
+  +double completed()
+  +bool is_done()
+  +void push_job(job j)
+  +job pop_job()
+
+  +{static} const int BLOCK_SIZE = (1 << 14)
+
+  ..job structure..
+  -priority_queue<job> jobs
+}
+
+class download::job {
+  +int index
+  +int begin
+  +int length
+  +int requested
+  +job(int i, int b, int l)
+  +job()
+  +bool operator<(const job& other) const
+}
+
+' ========================
+' 关系图
+' ========================
+download --> writer : uses
+download --> speed : uses
+download::job --> download : nested
+writer::job --> writer : nested
+
+@enduml

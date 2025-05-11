@@ -1,0 +1,44 @@
+@startuml
+class torrent {
+  ' 属性
+  +buffer info_hash                 ' 种子的info_hash值，用于与tracker和peer通信
+  +long long length                 ' 文件总长度（字节）
+  +url_t url                        ' 主要tracker的URL
+  +vector<url_t> announce_list      ' 备用tracker列表
+  +string name                      ' 文件名
+  +unsigned int piece_length        ' 每个片段的长度
+  +unsigned int pieces              ' 片段总数
+  -buffer pieces_hash               ' 所有片段的SHA1哈希值
+  
+  ' 常量
+  +{static} const unsigned int BLOCK_SIZE = (1<<14)  ' 16KB默认块大小
+
+  ' 公共方法
+  +torrent(const string& filename)  ' 构造函数，接收torrent文件路径
+  +unsigned int get_piece_length(unsigned int piece)  ' 获取指定片段的长度
+  +unsigned int get_n_blocks(unsigned int piece)      ' 获取指定片段的块数
+  +unsigned int get_block_length(unsigned int piece, unsigned int block_index)  ' 获取指定块的长度
+  +buffer get_piece_hash(unsigned int piece)          ' 获取指定片段的哈希值
+  
+  ' 私有方法
+  -buffer get_bytes(const string& filename)           ' 从文件读取字节
+  -buffer get_hash_info(const bencode::item& item)    ' 计算info字典的哈希
+  -long long get_length(const bencode::item& item)    ' 获取文件长度
+  -void parse_announce_list(const bencode::item& item)  ' 解析tracker列表
+  -void validate_torrent_structure(const bencode::item& root)  ' 验证torrent结构
+}
+
+note right of torrent::info_hash
+  种子文件中info字典的SHA1哈希值，
+  是BitTorrent协议中最重要的标识符
+end note
+
+note right of torrent::get_n_blocks
+  根据片段大小和默认块大小计算
+  一个片段包含多少个块
+end note
+
+note right of torrent::get_block_length
+  对于最后一个块，可能小于默认块大小
+end note
+@enduml

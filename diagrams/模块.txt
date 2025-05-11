@@ -1,0 +1,70 @@
+@startuml BitTorrent Module Detail
+
+package "Parsing" {
+    class Bencode {
+        + decode()
+        + encode()
+    }
+    class TorrentFile {
+        + metadata
+        + piece_hashes
+        + parse()
+    }
+    class Buffer {
+        + read()
+        + write()
+    }
+}
+
+package "Tracker" {
+    interface Transport {
+        + connect()
+        + announce()
+    }
+    class TrackerClient {
+        + get_peers()
+        + update_status()
+    }
+    class URL {
+        + parse()
+    }
+    
+    class HTTPTransport
+    class HTTPSTransport
+    class UDPTransport
+    class TCPTransport
+}
+
+package "Download" {
+    class DownloadManager {
+        + start()
+        + pause()
+        + resume()
+    }
+    class PeerConnection {
+        + handshake()
+        + request_piece()
+    }
+    class Message {
+        + parse()
+        + serialize()
+    }
+}
+
+' 关系
+TorrentFile --> Bencode
+TorrentFile --> Buffer
+
+TrackerClient --> Transport
+HTTPTransport --|> Transport
+HTTPSTransport --|> Transport
+UDPTransport --|> Transport
+TCPTransport --|> Transport
+TrackerClient --> URL
+
+DownloadManager --> PeerConnection
+PeerConnection --> Message
+DownloadManager --> TorrentFile
+DownloadManager --> TrackerClient
+
+@enduml

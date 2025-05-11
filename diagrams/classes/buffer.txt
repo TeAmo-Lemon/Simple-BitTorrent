@@ -1,0 +1,12 @@
+@startuml
+left to right direction
+
+class BufferUtil {
+  +unsigned int getBE16(const buffer& b, size_t idx)
+  +unsigned int getBE32(const buffer& b, size_t idx)
+  +buffer setBE32(unsigned int n, buffer& b, size_t idx)
+  +buffer setBE16(unsigned int n, buffer& b, size_t idx)
+  +void print(const buffer& b)
+}
+
+@enduml

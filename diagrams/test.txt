@@ -1,0 +1,12 @@
+@startuml
+start
+:编译测试代码;
+:准备测试数据（如.torrent文件）;
+:运行所有gtest用例;
+if (全部通过) then (是)
+  :输出“测试通过”;
+else (否)
+  :输出失败用例及错误信息;
+endif
+stop
+@enduml

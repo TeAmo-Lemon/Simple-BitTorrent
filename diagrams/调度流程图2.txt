@@ -1,0 +1,11 @@
+@startuml
+:从队列取出job;
+:分配给空闲peer;
+:peer请求block;
+:收到block，标记received;
+if (全部received) then (是)
+  stop
+else
+  :继续调度;
+endif
+@enduml

@@ -1,0 +1,51 @@
+@startuml Data Structures
+
+class Buffer {
+  + data: vector<uint8_t>
+  + size(): size_t
+  + operator[](i: size_t): uint8_t&
+}
+
+class Job {
+  + index: int
+  + begin: int
+  + length: int
+  + requested: int
+  
+  + operator<(other: Job): bool
+}
+
+class Peer {
+  + ip: string
+  + port: int
+  + id: string
+}
+
+class URL {
+  + protocol: string
+  + host: string
+  + port: int
+  + path: string
+  
+  + parse(url: string)
+}
+
+class BencodeItem {
+  + type: ItemType
+  + value: variant
+  + dict: map<string, BencodeItem>
+  + list: vector<BencodeItem>
+}
+
+enum ItemType {
+  STRING
+  INTEGER
+  LIST
+  DICTIONARY
+}
+
+BencodeItem -- ItemType
+Job -- Buffer
+Peer -- URL
+
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+class bencode {
+  +parse(buffer): item
+  +encode(item): buffer
+}
+class item {
+  +data: any
+  +t: type
+  +get_buffer(key): buffer
+  +get_int(key): long long
+  +get_string(key): string
+  +get_list(key): vector<item>
+}
+class torrent {
+  +info_hash: buffer
+  +length: long long
+  +announce_list: vector<url_t>
+  +piece_length: unsigned int
+  +pieces: unsigned int
+  +get_piece_length(piece): unsigned int
+}
+bencode -> item
+torrent -> bencode
+@enduml

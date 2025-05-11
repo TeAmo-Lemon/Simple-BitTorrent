@@ -1,0 +1,10 @@
+@startuml
+class peer {
+  +string host
+  +int port
+
+  +peer(string host, int port)
+  +void download()
+}
+
+@enduml

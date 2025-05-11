@@ -1,0 +1,48 @@
+@startuml
+left to right direction
+
+package "Bencode Module" {
+
+  class bencode {
+    -static void next(item& e, const buffer& s, size& idx)
+    -static item parse_byte_string(const buffer& s, size& idx)
+    -static item parse_integer(const buffer& s, size& idx)
+    -static item parse_list(const buffer& s, size& idx)
+    -static item parse_dictionary(const buffer& s, size& idx)
+
+    +static item parse(const buffer& s)
+    +static buffer encode(const item& e)
+    +static void print(const item& e)
+
+    {static} enum type { bs, i, l, d }
+  }
+
+  class "bencode::item" as item {
+    +std::any data
+    +type t
+
+    +bool operator==(const item& other)
+    +bool operator<(const item& other)
+
+    +buffer get_buffer(const char* key)
+    +long long get_int(const char* key)
+    +std::string get_string(const char* key)
+    +item get_item(const char* key)
+    +std::vector<item> get_list(const char* key)
+    +bool key_present(const char* key)
+
+    -item get(const item& key)
+  }
+
+  class "bencode::invalid_bencode" as invalid_bencode {
+    +invalid_bencode()
+    +invalid_bencode(const char* what)
+  }
+
+  bencode *-- item : contains
+  bencode -[hidden]-> invalid_bencode
+  item --> buffer : uses
+
+}
+
+@enduml

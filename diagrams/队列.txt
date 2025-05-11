@@ -1,0 +1,13 @@
+@startuml
+actor Client
+participant PeerConnection
+participant Peer
+
+Client -> PeerConnection: 建立TCP连接
+PeerConnection -> Peer: 发送握手消息
+Peer -> PeerConnection: 返回握手消息
+PeerConnection -> Peer: 发送感兴趣/请求消息
+Peer -> PeerConnection: 发送数据块(piece)
+PeerConnection -> Client: 写入本地文件
+PeerConnection -> Peer: 发送下一个请求
+@enduml

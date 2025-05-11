@@ -1,0 +1,42 @@
+@startuml Interfaces
+
+interface ITransport {
+  + connect()
+  + announce()
+  + {abstract} send_request()
+  + {abstract} receive_response()
+}
+
+class HTTPTransport {
+  + send_request()
+  + receive_response()
+}
+
+class UDPTransport {
+  + send_request()
+  + receive_response()
+}
+
+interface IPeerConnection {
+  + handshake()
+  + request_piece()
+  + send_message()
+  + receive_message()
+}
+
+class PeerConnection {
+  - socket: Socket
+  - peer_id: string
+  - am_choking: bool
+  - am_interested: bool
+  + handshake()
+  + request_piece()
+  + send_message()
+  + receive_message()
+}
+
+ITransport <|.. HTTPTransport
+ITransport <|.. UDPTransport
+IPeerConnection <|.. PeerConnection
+
+@enduml

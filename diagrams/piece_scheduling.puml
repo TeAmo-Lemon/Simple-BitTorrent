@@ -1,0 +1,17 @@
+@startuml
+title 文件分片与调度算法流程
+
+|调度算法|
+start
+:初始化下载队列;
+while (未完成所有分片) is (是)
+  :遍历所有分片;
+  if (分片未下载) then (是)
+    :将分片拆分为16KB的BLOCK;
+    :生成下载任务job(piece, block);
+    :根据requested次数加入优先队列;
+  endif
+endwhile
+
+:连接Tracker获取Peer列表;
+@enduml

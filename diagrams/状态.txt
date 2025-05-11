@@ -1,0 +1,54 @@
+@startuml
+package "单元测试覆盖范围" {
+    package "解析模块 (parsing)" {
+        [Bencode类测试] as BencodeTest
+        note right of BencodeTest
+            - 测试`bencode::decode`各类数据类型
+            - 测试`bencode::encode`的正确性
+            - 边界条件：空输入、错误格式
+        end note
+        [Torrent类测试] as TorrentTest
+        note right of TorrentTest
+            - 构造函数：有效/无效torrent文件
+            - `info_hash`计算正确性
+            - `piece_length`, `pieces`等属性获取
+            - `get_piece_length`, `get_n_blocks`等方法
+            - Tracker URL (`url`, `announce_list`)解析
+        end note
+        [Buffer类测试] as BufferTest
+        note right of BufferTest
+            - 构造、追加、大小等基本操作
+            - 边界情况：空buffer操作
+        end note
+    }
+    package "Tracker模块 (tracker)" {
+        [URL类测试 (url_t)] as URLTest
+        note right of URLTest
+            - `url_t::parse` 对HTTP/UDP tracker URL的解析
+            - 正确提取protocol, host, port, path
+        end note
+        [Tracker类测试 (部分)] as TrackerLogicTest
+        note right of TrackerLogicTest
+            - UDP连接/通告请求构建逻辑
+            - HTTP/HTTPS通告请求构建逻辑
+            - （需配合Mock对象模拟网络交互）
+        end note
+    }
+    package "下载模块 (download) - 辅助类" {
+        [Writer类测试] as WriterTest
+        note right of WriterTest
+            - 文件异步写入的正确性
+            - `add`方法和写入偏移量
+            - `start`/`stop`线程管理
+            - 错误处理：文件无法打开
+        end note
+        [Speed类测试] as SpeedTest
+        note right of SpeedTest
+            - `add`字节数累加
+            - `start`/`stop`线程管理
+            - 速度计算和`draw`方法输出格式
+            - `human_readable`格式化
+        end note
+    }
+}
+@enduml
